@@ -1,3 +1,7 @@
 
 .DS_Store
 es accademy/TRACK 1/devops_contest/
+.vagrant/
+**/.vagrant/
+*.log
+.DS_Store

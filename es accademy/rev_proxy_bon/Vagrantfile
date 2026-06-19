@@ -1,0 +1,418 @@
+#configurazione generale
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/debian12"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 768
+    vb.cpus = 1
+  end 
+
+#backend1 configurazione
+config.vm.define "backend1" do |backend1|
+  #setting hostname
+  backend1.vm.hostname = "backend1" 
+  #setting rete
+  backend1.vm.network "private_network", ip: "192.168.50.51"
+  #provisioning tramite shell
+  backend1.vm.provision "shell", inline: <<-SHELL
+    #aggiorno elenco pacchetti
+    apt-get update
+    #installo programmi web e firewall
+    apt-get install -y nginx firewalld
+    #abilito firewall
+    systemctl enable --now firewalld
+    #creo una variabile 'zone' in cui identifico la zona corrente del firewall
+    ZONE="$(firewall-cmd --get-default-zone)"
+    #imposto una regola del firewall backend1 grazie alla quale con http solo frontend può accedervi
+    firewall-cmd --permanent --zone="$ZONE" --add-rich-rule='rule family="ipv4" source address="192.168.50.50/32" port port="80" protocol="tcp" accept'
+    #ricarico il firewall
+    firewall-cmd --reload
+
+    #creo pagina html specifica backend 1 --> FATTA DA AI
+    cat > /var/www/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Backend Roma</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #8e1f2d, #5c0011);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 750px;
+      padding: 45px;
+      text-align: center;
+      border: 4px solid #f4c542;
+      border-radius: 20px;
+      background-color: rgba(92, 0, 17, 0.85);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 5px solid #f4c542;
+      border-radius: 50%;
+      color: #f4c542;
+      font-size: 52px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 10px 0;
+      color: #f4c542;
+      font-size: 42px;
+    }
+
+    .slogan {
+      font-size: 22px;
+      font-style: italic;
+    }
+
+    .server-info {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: #163300;
+      background-color: #8fff70;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 30px;
+      color: #f4c542;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <div class="logo">RM</div>
+
+    <h1>Forza Roma</h1>
+
+    <p class="slogan">
+      Benvenuto nel server giallorosso.
+    </p>
+
+    <section class="server-info">
+      <h2>Backend Roma</h2>
+
+      <p>
+        Questa richiesta è stata gestita dal primo server web della capitale.
+      </p>
+
+      <p>
+        <strong>Hostname:</strong> backend1
+      </p>
+
+      <p>
+        <strong>Indirizzo IP:</strong> 192.168.50.51 NOTO ANCHE COME 1.9.2.7
+      </p>
+
+      <div class="status">
+        SERVER ONLINE!
+      </div>
+    </section>
+
+    <footer>
+      HAProxy DevOps Lab — Percorso /roma
+    </footer>
+
+  </main>
+</body>
+</html>
+EOF
+    #avvio nginx
+    systemctl enable --now nginx
+    #controlla che conf nginx sia corretta
+    nginx -t
+  SHELL
+end
+
+#backend2
+config.vm.define "backend2" do |backend2|
+  #setting hostname
+  backend2.vm.hostname = "backend2"
+  #setting network ip
+  backend2.vm.network "private_network", ip: "192.168.50.52"
+  #provisioning tramite shell come in backend1
+  backend2.vm.provision "shell", inline: <<-'SHELL'
+    apt-get update
+    apt-get install -y nginx firewalld
+    systemctl enable --now firewalld
+    ZONE="$(firewall-cmd --get-default-zone)"
+    firewall-cmd --permanent --zone="$ZONE" --add-rich-rule='rule family="ipv4" source address="192.168.50.50/32" port port="80" protocol="tcp" accept'
+    firewall-cmd --reload
+
+    #creo pagina htmnl specifica backend2 --> IA
+    cat > /var/www/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Backend Lazio</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #183153;
+      background: linear-gradient(135deg, #87ceeb, #dff6ff);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 750px;
+      padding: 45px;
+      text-align: center;
+      border: 4px solid white;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 5px solid #60b6dc;
+      border-radius: 50%;
+      color: #60b6dc;
+      background-color: white;
+      font-size: 52px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 10px 0;
+      color: #4aa9d1;
+      font-size: 42px;
+    }
+
+    .slogan {
+      color: #315b7a;
+      font-size: 22px;
+      font-style: italic;
+    }
+
+    .server-info {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid #9bd9f2;
+      border-radius: 12px;
+      background-color: #edfaff;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: #163300;
+      background-color: #8fff70;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 30px;
+      color: #4a8eac;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <div class="logo">LZ</div>
+
+    <h1>Lazio</h1>
+
+    <p class="slogan">
+      Benvenuto nel server biancoceleste.
+    </p>
+
+    <section class="server-info">
+      <h2>Backend Lazio</h2>
+
+      <p>
+        Questa richiesta è stata gestita dal secondo server web della capitale.
+      </p>
+
+      <p>
+        <strong>Hostname:</strong> backend2
+      </p>
+
+      <p>
+        <strong>Indirizzo IP:</strong> 192.168.50.52
+      </p>
+
+      <div class="status">
+        SERVER ONLINE
+      </div>
+    </section>
+
+    <footer>
+      HAProxy DevOps Lab — Percorso /lazio
+    </footer>
+
+  </main>
+</body>
+</html>
+EOF
+    #avvio nginx
+    systemctl enable --now nginx
+    nginx -t
+  SHELL
+end
+
+###
+### CONFIGURO FRONTEND
+###
+#assegno primary true per specificare che è la macchina principale dell 'environment'
+config.vm.define "frontend" do |frontend|
+  #setting hostname
+  frontend.vm.hostname = "frontend"
+  #setting network
+  frontend.vm.network "private_network", ip: "192.168.50.50"
+  #apro le porte dedicate a servizi http https e health check
+  #frontend.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1", auto_correct: true
+  #frontend.vm.network "forwarded_port", guest: 443, host:8443, host_ip: "127.0.0.1", auto_correct: true
+  #provisioning tramite shell
+  frontend.vm.provision "shell", inline: <<-SHELL
+    #aggiorno elenco pacchetti 
+    apt-get update
+    #installo servizi per proxy certificati firewall e web
+    apt-get install -y haproxy openssl firewalld curl
+    ####
+    #CREAZIONE CERTIFICATO
+    #creo la cartella dove verrà salvato il certificato
+    mkdir -p /etc/haproxy/certs
+      #creo il certificato tramite openssl
+      #req -x509 crea certificato x509
+      #-newkey rsa:2048 crea una chiave RSA da 2048 bit per creare il certificato
+      #-sha256 usa sha-256 come algoritmo di hash per la firma
+      #-noenc permette la non cifratura della chiave con password
+      #-days 365 indica il periodo di validità del certificato
+      #-keyout indica il percorso dove salvare la chiave appena generata
+      #-out indica il percorso dove salvare il certificato pubblico
+      #-subj indica i valori da inserire direttamente per evitare che openssl li chieda all'avvio con domande interattive
+       #-addext aggiunge il Subject Alternative Name
+      openssl req -x509 -newkey rsa:2048 -sha256 -noenc -days 365 -keyout /etc/haproxy/certs/frontend.key -out /etc/haproxy/certs/frontend.crt -subj "/C=IT/ST=Lazio/L=Roma/O=DevOps Lab/OU=HAProxy/CN=192.168.50.50" -addext "subjectAltName=IP:192.168.50.50,IP:127.0.0.1,DNS:localhost,DNS:frontend"
+      #unisco chiave e certificato nel file .pem utilizzato da HAProxy
+      cat /etc/haproxy/certs/frontend.crt /etc/haproxy/certs/frontend.key > /etc/haproxy/certs/frontend.pem
+
+    #attivo il programma firewall
+    systemctl enable --now firewalld
+    #apro servizio http porta 80, https porta 443 e ricarico.
+    firewall-cmd --permanent --add-service=http
+    firewall-cmd --permanent --add-service=https
+    firewall-cmd --reload
+    
+    #configurazione file .cfg di haproxy
+    #global --> impostazioni generali (log e connessioni massime contemporanee)
+    #defaults --> impostazioni specifiche per le sezioni successive (tipo di protocollo impostazioni)
+    #frontend --> impostazioni per il punto dove haproxy riceve richieste dal client (porte in ascolto, certificato, redirect, acl, e backend predefinito)
+    #backend 1/2 --> impostazioni dei due server di backend
+    #backend bilanciato --> in caso non venga specificato un percorso il server sceglierà a chi instradare il traffico
+    cat > /etc/haproxy/haproxy.cfg <<EOF
+    global
+      log /dev/log local0
+      maxconn 2048
+
+    defaults
+      log global
+      mode http
+      option httplog
+      retries 3
+
+      timeout connect 5s
+      timeout client 30s
+      timeout server 30s
+
+    frontend fronte
+      bind *:80
+      bind *:443 ssl crt /etc/haproxy/certs/frontend.pem
+
+      http-request redirect scheme https code 302 unless { ssl_fc }
+      
+      acl richiesta_roma path -i /roma
+      acl richiesta_lazio path -i /lazio
+
+      use_backend backend1 if richiesta_roma
+      use_backend backend2 if richiesta_lazio
+
+      default_backend web_servers
+
+    backend backend1
+      http-request set-path /
+
+      server backend1 192.168.50.51:80 check inter 2s fall 3 rise 2
+
+    backend backend2
+      http-request set-path /
+
+      server backend2 192.168.50.52:80 check inter 2s fall 3 rise 2
+
+      
+    backend web_servers
+      balance roundrobin
+
+      server backend1 192.168.50.51:80 check inter 2s fall 3 rise 2
+      server backend2 192.168.50.52:80 check inter 2s fall 3 rise 2
+EOF
+    haproxy -c -f /etc/haproxy/haproxy.cfg
+
+    systemctl enable --now haproxy
+    systemctl restart haproxy
+
+    systemctl --no-pager status haproxy
+
+
+  SHELL
+  end
+end
