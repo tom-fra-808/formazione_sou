@@ -313,7 +313,6 @@ end
 ###
 ### CONFIGURO FRONTEND
 ###
-#assegno primary true per specificare che è la macchina principale dell 'environment'
 config.vm.define "frontend" do |frontend|
   #setting hostname
   frontend.vm.hostname = "frontend"
