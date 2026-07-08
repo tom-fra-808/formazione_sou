@@ -60,7 +60,7 @@ Il problema è risolvibile in **7 passaggi**.
 7. A + P --> destra
 ```
 
-> [!TIP]
+> [!IMPORTANT]
 > La pecora è l'attore più importante da controllare, perché può essere mangiata dal lupo ma può anche mangiare il cavolo.
 
 ---
@@ -112,8 +112,10 @@ All'inizio i quattro processi partono nel container `sponda_sx`.
 
 In base alle scelte dell'utente, i processi vengono terminati su un container e riavviati sull'altro, simulando il passaggio da una sponda all'altra.
 
-> [!IMPORTANT] Attori
+
+> [!IMPORTANT] 
 > Gli attori del gioco sono processi Linux `sleep infinity` avviati dentro i container Docker.
+
 
 Qualora l'utente vada contro le regole del gioco e lasci su una sponda:
 
@@ -181,9 +183,11 @@ inizializza_container(){
 Prima elimina eventuali vecchi container, poi crea le due sponde e infine avvia i processi degli attori.
 I container vengono creati da un'immagine di ubuntu.
 
-> [!TIP] Uso Comandi 
+
+> [!TIP] 
 > `docker rm -f` serve per eliminare i container erano già presenti da una partita precedente.
 > `docker run -dit --name` crea un container in background con terminale interattivo ed un nome specificato dopo l'apposita flag
+
 
 ---
 
@@ -265,7 +269,8 @@ Serve per capire dove deve arrivare l'attore durante lo spostamento.
 
 Ogni attore viene rappresentato da un processo Linux `sleep infinity`
 
->[!TIP] La funzione `start_process` avvia il processo nel container corretto.
+>[!TIP] 
+>La funzione `start_process` avvia il processo nel container corretto.
 
 
 ```bash
@@ -280,7 +285,8 @@ start_process(){
 
 Il comando `exec -a` permette di dare al processo il nome dell'attore.
 
->[!TIP] La funzione `ferma_processo` termina invece il processo quando l'attore lascia una sponda.
+>[!TIP] 
+>La funzione `ferma_processo` termina invece il processo quando l'attore lascia una sponda.
 
 ```bash
 ferma_processo(){
@@ -292,7 +298,7 @@ ferma_processo(){
 }
 ```
 
-> [!NOTE] PID 
+> [!NOTE] 
 > Il PID del processo viene salvato in `/tmp/$attore.pid`, così lo script sa quale processo deve fermare.
 
 ---
