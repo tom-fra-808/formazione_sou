@@ -1,0 +1,19 @@
+---
+- name: installo pachetti con dictionary
+  hosts: server
+  become: true
+
+  vars:
+    packs:
+      nmap: present
+      nano: present
+      apache2: present
+      firewalld: present
+  
+  tasks:
+    - name: Installo pacchetti
+      ansible.builtin.apt:
+        name: "{{ item.key }}"
+        state: "{{ item.value }}"
+      loop: "{{ packs | dict2items }}"
+      

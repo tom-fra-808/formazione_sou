@@ -1,0 +1,7 @@
+{% if ambiente == 'produzione' %}
+{{ utente }} soft nofile 10000
+{{ utente }} hard nofile 10000
+{% else %}
+{{ utente }} soft nofile 1000
+{{ utente }} hard nofile 1000
+{% endif %}

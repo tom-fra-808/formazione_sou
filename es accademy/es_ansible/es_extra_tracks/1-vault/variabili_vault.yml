@@ -1,0 +1,12 @@
+---
+- name: Vault 
+  hosts: server
+  become: true
+
+  vars_files:
+    - vault.yml
+  
+  tasks:
+    - name: Stampo variabili
+      ansible.builtin.debug:
+        msg: "Mi chiamo {{ nome }}, ho {{ età }} e vivo a {{ città }}"

@@ -130,7 +130,7 @@
 
 #portscan
 	for (( i=ini_port; i<=fini_port; i++ )); do
-		if nc -z -w 1 "$ip" "$i" >/dev/null 2>&1; then
+		if nc -z -w 2.5 "$ip" "$i" >/dev/null 2>&1; then
 			echo "Porta $i aperta"
 			echo "Porta $i" >> /tmp/open_$ip.txt
 		else
