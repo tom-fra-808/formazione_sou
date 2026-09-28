@@ -1,0 +1,10 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2204"
+  config.vm.hostname = "otel-lab"
+
+  config.vm.synced_folder "./shared", "/home/vagrant/otel-lab"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+end
