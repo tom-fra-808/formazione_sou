@@ -1,0 +1,33 @@
+---
+- name: provisioning della vm
+  hosts: all
+  become: true
+
+  tasks:
+    - name: AGGIORNO APT
+      apt:
+        update_cache: yes
+
+    - name: installo docker
+      apt:
+        name:
+          - docker.io
+        state: present
+
+    - name: aggiungo utente a gruppo docker
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: avvio servizio docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: copio lo script nella vm
+      copy:
+        src: ./shared_files/lupo_v3.sh
+        dest: /usr/local/bin/lupo_v3
+        mode: '0755'

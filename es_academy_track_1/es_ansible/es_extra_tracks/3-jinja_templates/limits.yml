@@ -1,0 +1,21 @@
+---
+- name: Configurazione limits
+  hosts: server
+
+  vars:
+    utente: mario
+    ambiente: produzione
+
+  tasks:
+    - name: Genero il file dal template
+      ansible.builtin.template:
+        src: templates/limit.j2
+        dest: /tmp/limits_output.txt
+      delegate_to: localhost
+
+    - name: Aggiungo i limiti in fondo al file
+      become: true
+      ansible.builtin.blockinfile:
+        path: /etc/security/limits.conf
+        block: "{{ lookup('ansible.builtin.file', '/tmp/limits_output.txt') }}"
+        insertafter: EOF
