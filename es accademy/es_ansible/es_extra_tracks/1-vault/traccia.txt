@@ -1,2 +1,0 @@
-Creare un Vault contenente alcune variabili nel formato var_name: value.
-Includere tali variabili in un playbook tramite la direttiva vars_files e stamparne a video il valore (HINT: ricordarsi di attivare il prompt della password del Vault quando si lancia il playbook)
