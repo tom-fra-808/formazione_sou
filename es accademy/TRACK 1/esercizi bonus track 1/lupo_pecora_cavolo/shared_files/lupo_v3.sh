@@ -16,6 +16,7 @@
     L="sinistra"
     P="sinistra"
     C="sinistra"
+
 #funzioni
     inizializza_container(){
         docker rm -f "$SPO_SX" "$SPO_DX" >/dev/null 2>&1 

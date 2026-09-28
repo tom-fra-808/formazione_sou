@@ -1,0 +1,22 @@
+---
+- name: Installo Docker sui nodi
+  hosts: pingpong
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Aggiorno la cache dei pacchetti
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Installo Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Avvio e abilito Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
