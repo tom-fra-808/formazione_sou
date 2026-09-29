@@ -8,3 +8,8 @@ Laboratorio per esercizi [track 1](es_academy_track_1/):
 - es Bonus [Rev Proxy](es_academy_track_1/rev_proxy_bon/)
 
 Laboratorio di esercitazione [Observability](observability/)
+
+- es [Track 6](observability/track_6_es/)
+
+- es [bonus Observability](observability/track_6_es/es_bonus/)
+
